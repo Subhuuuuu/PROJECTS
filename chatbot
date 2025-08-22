@@ -1,3 +1,5 @@
+#CHATBOT.py(file)
+#############
 import numpy as np
 import random
 import json
@@ -45,13 +47,11 @@ class NLPChatbot:
         print(f"✓ Learned {len(self.intents)} intents: {list(self.intents.keys())}")
     
     def clean_text(self, text):
-        """Simple text cleaning without NLTK"""
         text = text.lower().strip()
         text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
         return text
     
     def get_intent(self, user_input):
-        """Get intent using multiple methods for better accuracy"""
         cleaned_input = self.clean_text(user_input)
         
         # Method 1: Simple exact pattern matching first (fast and reliable)
@@ -105,7 +105,64 @@ class NLPChatbot:
             print(f"Chatbot: {response}")
             print(f"(Detected intent: {intent})")  # Debug info
 
-# Create and run the chatbot
 if __name__ == "__main__":
     chatbot = NLPChatbot()
     chatbot.chat()
+
+____________________________________________________________________________________________________________________________________________________________________
+#Contents.json(responses)
+#########################
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["hi", "hello", "hey", "howdy", "hola", "greetings", "good morning", "good afternoon", "good evening", "what's up", "how are you doing"],
+      "responses": ["Hello! How can I help you?", "Hi there! What can I do for you?", "Hey! How can I assist you today?", "Greetings! What's on your mind?"]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["bye", "goodbye", "see you", "farewell", "quit", "exit", "see ya", "catch you later", "i have to go", "talk to you later"],
+      "responses": ["Goodbye! Have a great day!", "See you later!", "Bye! Come back again soon.", "Take care!", "It was nice talking to you!"]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["thank you", "thanks", "appreciate it", "thx", "thank you so much", "thanks a lot", "i appreciate it", "you're awesome"],
+      "responses": ["You're welcome!", "Happy to help!", "Anytime!", "My pleasure!", "Glad I could assist!"]
+    },
+    {
+      "tag": "about",
+      "patterns": ["who are you", "what are you", "tell me about yourself", "your name", "what is your purpose", "what can you do", "what do you do"],
+      "responses": ["I'm a chatbot designed to help answer questions.", "I'm an AI-powered chatbot!", "I'm your friendly virtual assistant.", "You can call me ChatBot. My purpose is to chat with you!", "I'm a program created to simulate conversation."]
+    },
+    {
+      "tag": "help",
+      "patterns": ["help", "how does this work", "support", "can you help me", "what are my options", "what can i ask", "how to use"],
+      "responses": ["I can chat with you and answer questions. Try asking me about various topics!", "I'm here to have a conversation. Ask me anything or just say hello!", "I can respond to greetings, farewells, thanks, and tell you about myself. Try saying 'hi' or 'what can you do?'!", "My purpose is to assist you. Just type your question or message!"]
+    },
+    {
+      "tag": "joke",
+      "patterns": ["joke", "funny", "make me laugh", "hilarious", "tell me a joke", "say something funny", "make me smile"],
+      "responses": ["Why don't scientists trust atoms? Because they make up everything!", "Why did the scarecrow win an award? Because he was outstanding in his field!", "What do you call a fake noodle? An impasta!", "Why don't eggs tell jokes? They'd crack each other up!", "What's the best thing about Switzerland? I don't know, but the flag is a big plus."]
+    },
+    {
+      "tag": "weather",
+      "patterns": ["weather", "forecast", "rain", "sunny", "temperature", "is it hot", "is it cold", "will it rain today", "what's the weather", "how is the weather"],
+      "responses": ["I don't have real-time weather data, but I recommend checking a weather app!", "I'm not connected to weather services, but you can ask me other questions!", "You should check your phone's weather app for the most accurate forecast.", "I wish I could tell you! I'm just a text-based chatbot."]
+    },
+    {
+      "tag": "name",
+      "patterns": ["what is my name", "do you know my name", "who am i", "what do i call myself", "my name is"],
+      "responses": ["I don't actually know your name! You haven't told me yet.", "You can tell me your name if you'd like!", "I'm afraid I don't store personal information like names.", "You can be whoever you want to be here!"]
+    },
+    {
+      "tag": "feelings",
+      "patterns": ["how are you", "how do you feel", "are you ok", "are you happy", "how's it going", "what's up", "how have you been"],
+      "responses": ["I'm functioning well, thanks for asking! How are you?", "I don't have feelings, but I'm here and ready to help!", "I'm just a program, so I'm always fine!", "I'm great! Ready to chat."]
+    },
+    {
+      "tag": "time",
+      "patterns": ["what time is it", "current time", "time now", "what's the time", "what is the time"],
+      "responses": ["I don't have access to real-time clock data.", "You should check your device's clock for the current time!", "I'm not connected to time services currently."]
+    }
+  ]
+}
