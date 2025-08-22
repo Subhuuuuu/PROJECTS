@@ -1,82 +1,41 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
-import pickle
-import csv
+from sklearn.metrics.pairwise import cosine_similarity
 import json
-import timeit
 import random
-#import os
-def talk_to_cb_primary(test_set_sentence, minimum_score , json_file_path , tfidf_vectorizer_pikle_path ,tfidf_matrix_train_pikle_path):
-  test_set = (test_set_sentence, "")
-  try:
-    f = open(tfidf_vectorizer_pikle_path, 'rb')
-    tfidf_vectorizer = pickle.load(f)
-    f.close()
-    f = open(tfidf_matrix_train_pikle_path, 'rb')
-    tfidf_matrix_train = pickle.load(f)
-    f.close()
-  except:
-    tfidf_vectorizer , tfidf_matrix_train = train_chat(json_file_path , tfidf_vectorizer_pikle_path , tfidf_matrix_train_pikle_path)
-  tfidf_matrix_test = tfidf_vectorizer.transform(test_set)
-  cosine = cosine_similarity(tfidf_matrix_test, tfidf_matrix_train)
-  cosine = np.delete(cosine, 0)
-  max = cosine.max()
-  response_index = 0
-  if (max > minimum_score):
-    new_max = max - 0.01
-    list = np.where(cosine > new_max)
-    # print ("number of responses with 0.01 from max = " + str(list[0].size))
-    response_index = random.choice(list[0])
-  else :
-    return "live_chat" , 0
-  j = 0
-  with open(json_file_path, "r") as sentences_file:
-    reader = json.load(sentences_file)
-    for row in reader:
-      j += 1 # we begin with 1 not 0 & j is initialized by 0
-      if j == response_index:
-        return row["response"], max
+
+# Load dataset from JSON
+with open("previous_chats.json", "r") as f:
+    data = json.load(f)
+
+# Extract messages and responses
+messages = [row["message"] for row in data]
+responses = [row["response"] for row in data]
+
+# Train TF-IDF vectorizer
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(messages)
+
+def chatbot_response(user_input, min_score=0.3):
+    # Convert user input to vector
+    user_vec = vectorizer.transform([user_input])
+
+    # Compute cosine similarity
+    similarity = cosine_similarity(user_vec, tfidf_matrix).flatten()
+    best_score = similarity.max()
+
+    if best_score < min_score:
+        return "Sorry, I don’t understand. Try rephrasing."
+
+    # Find best matches
+    best_indices = (similarity >= best_score - 0.01).nonzero()[0]
+    chosen_index = random.choice(best_indices)
+    return responses[chosen_index]
+
+# Run chatbot loop
+print("Chatbot: Hi! Type 'quit' to exit.")
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ("quit", "exit", ":q"):
+        print("Chatbot: Goodbye!")
         break
-def train_chat(json_file_path, tfidf_vectorizer_pikle_path , tfidf_matrix_train_pikle_path):
-  i = 0
-  sentences = []
-  # enter your test sentence
-  # 3ashan yzabt el indexes
-  sentences.append(" No you.")
-  sentences.append(" No you.")
-  start = timeit.default_timer()
-  # enter jabberwakky sentence
-  with open(json_file_path, "r") as sentences_file:
-    reader = json.load(sentences_file)
-    # reader.next()
-    for row in reader:
-      # if i==stop_at_sentence:
-      # break
-      sentences.append(row["message"])
-      i += 1
-  tfidf_vectorizer = TfidfVectorizer()
-  tfidf_matrix_train = tfidf_vectorizer.fit_transform(sentences) # finds the tfidf score with normalization
-  # tfidf_matrix_test =tfidf_vectorizer.transform(test_set)
-  stop = timeit.default_timer()
-  print ("training time took was : ")
-  print (stop - start)
-  f = open(tfidf_vectorizer_pikle_path, 'wb')
-  pickle.dump(tfidf_vectorizer, f)
-  f.close()
-  f = open(tfidf_matrix_train_pikle_path, 'wb')
-  pickle.dump(tfidf_matrix_train, f)
-  f.close()
-  return tfidf_vectorizer , tfidf_matrix_train
-def previous_chats(query):
-  minimum_score = 0.7
-  file = "/content/previous_chats.json"
-  tfidf_vectorizer_pikle_path = "/content/previous_tfidf_vectorizer.pickle"
-  tfidf_matrix_train_path = "/content/previous_tfidf_matrix_train.pickle"
-  query_response, score = talk_to_cb_primary(query , minimum_score , file , tfidf_vectorizer_pikle_path , tfidf_matrix_train_path)
-  return query_response
-exit_conditions = (":q", "quit", "exit")
-while 1:
-  sent = input("User: ")
-  print(previous_chats(sent))
+    print("Chatbot:", chatbot_response(user_input))
