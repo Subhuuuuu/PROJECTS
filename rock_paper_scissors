@@ -1,0 +1,42 @@
+import random as r
+print("WELCOME!!")
+#FOR USER
+print("Enter 1 for choosing Rock \nEnter 2 for choosing Paper \nEnter 3 for choosing Scissors\n")
+while True:
+    user_ch=int(input("Enter your choice:- \n"))
+    if(user_ch==1):
+        print("You have chose Rock!\n")
+    elif(user_ch==2):
+        print("You have chose Paper!\n")
+    else:
+        print("You have chose Scissors!\n")
+    print("Now it's turn for computer's Choice\n")
+
+#FOR COMPUTER
+    cp_ch=r.randint(1,3) #Using randint method of random module
+    if(cp_ch==1):
+        print("Computer's choice: Rock!\n")
+    elif(cp_ch==2):
+        print("Computer's choice: Paper!\n")
+    else:
+        print("Computer's choice: Scissors!\n")
+
+#Conditions to win
+    print("DECISION TIME..... ANDD\n")
+    if((user_ch==1 and cp_ch==3) or (user_ch==2 and cp_ch==1) or(user_ch==3 and cp_ch==2)):
+        print("User wins!!\n")
+    elif((user_ch==1 and cp_ch==2) or (user_ch==2 and cp_ch==3) or (user_ch==3 and cp_ch==1)):
+            print("Computer wins!!\n")
+
+#Draw Scenario
+    elif(user_ch==cp_ch):
+        print("It's a tie!\n")
+
+#Asking user to play more
+    print("Do you want to play again(Y/N)?")
+    a=input()
+
+#If input is Y then the condition will be False and loop continues If N it will terminate and print the rest
+    if(a=='N'):
+        break
+print("Thanks for playing!")
